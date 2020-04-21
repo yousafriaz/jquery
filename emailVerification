@@ -1,0 +1,86 @@
+	// YRIAZ : 04212020 this variable served as global variable to saerve error message 
+	var error_message;
+	// YRIAZ : 04212020 Function of this methoed is just to act as callback function since add method "validateEmail" below has limitation to just out put ONE
+	// error message : this method helpd to throw multiple errors with one shot .  
+	var dynamicErrorMsg = function () { 
+		
+		if (error_message.length > 0 || error_message != '') 
+			return  error_message; 
+		}
+	
+	// YRIAZ 04212020 :  Added new method to handle email validation and verification , this takes care of 2 sets od email validation 
+  // on a web page - if you want it for one pair then remove parent2_* related email stuff from addMethod and pass only ('Parent1Email','Parent1EmailConf','Parent 1 Email' , 'Parent 1 Confirmation Email')
+	
+	jQuery.validator.addMethod("validateEmail", function(value, element, params) {
+		var pattern  = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+		var email_p1 = document.getElementById(params[0]).value;
+		email_p1 = email_p1.trim();
+		var email_p2 = document.getElementById(params[1]).value;
+		email_p2 = email_p2.trim();		
+
+		var parent2_email = document.getElementById(params[4]).value;
+		parent2_email = parent2_email.trim();
+		var parent2conf_email = document.getElementById(params[5]).value;
+		parent2conf_email = parent2conf_email.trim();		
+
+		error_message = '';
+		var isValid = true;
+		var default_msg = 'Email Address and Email Address Confirmation for Parent 1 and Parent 2 are not required Field \nsince you have entered one please either fix errors or remove email id from these two fields\n\n\n'
+					
+			// this segment id for parents 1 email and email cong
+			if (email_p1.length > 0 || email_p2.length > 0){
+					if (email_p1 != email_p2){
+						error_message = error_message + '- Email addresses '+ params[2] + ' and ' + params[3] +' doest not match with each other\n\n' ;
+						isValid = false;
+					}
+
+					if (!pattern.test(email_p1)){
+						error_message = '- Invalid ' + params[2] + ' Address\n';
+						isValid = false;
+					}
+					if (!pattern.test(email_p2)){
+						error_message = error_message + '- Invalid '+ params[3] +' Address\n\n';	
+						isValid = false;
+					}
+					
+					
+				}
+
+			// this segement is for parent 2 email and email conf	
+			if (parent2_email.length > 0 || parent2conf_email.length > 0){
+					if (parent2_email != parent2conf_email){
+						error_message = error_message + '- Email addresses '+ params[6] + ' and ' + params[7] +' doest not match with each other\n\n' ;
+						isValid = false;
+					}
+
+					if (!pattern.test(parent2_email)){
+						error_message = '- Invalid ' + params[6] + ' Address\n';
+						isValid = false;
+					}
+					if (!pattern.test(parent2conf_email)){
+						error_message = error_message + '- Invalid '+ params[7] +' Address\n\n';	
+						isValid = false;
+					}
+					
+					
+				}
+
+
+		
+		if(error_message.length > 0)
+			error_message = default_msg+error_message;
+			
+		
+		
+		
+		return isValid;
+	}, dynamicErrorMsg);
+	
+	//Identifying Field Valiation
+	//set child specific required fields validation
+  //if its required field then use required: true
+	var childIdentifyingRules = {
+		Parent1Email: 		{required: false,validateEmail:['Parent1Email','Parent1EmailConf','Parent 1 Email' , 'Parent 1 Confirmation Email','Parent2Email','Parent2EmailConf','Parent 2 Email' , 'Parent 2 Confirmation Email'] }
+		//,parent1LandLine: 	{required: true}								
+	};
+	
